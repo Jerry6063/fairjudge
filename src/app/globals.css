@@ -1,0 +1,462 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+/* ==========================================================================
+   fairjudge — the design token layer
+   ==========================================================================
+
+   Every visual decision this product makes is declared here. Screens compose
+   these tokens and the semantic classes underneath them; a screen that needs a
+   colour, a size or a rule that is not in this file is a screen asking for a
+   token, not for a one-off.
+
+   The design has one argument, and the type carries it:
+
+     **A verdict is a document served by apparatus.**
+
+   So there are two voices, and the tension between them is the whole design.
+   The DOCUMENT voice is a serif — it is the judgment's own prose, the thing a
+   person came here to read, set at reading size with a real measure. The
+   APPARATUS voice is the system sans — labels, counts, provenance, chrome:
+   everything that describes the document rather than being it. Apparatus is
+   always smaller and always quieter. It never competes; it never decorates.
+
+   Two rules govern everything else:
+
+   1. **Whitespace and hairlines, not boxes.** A bordered card says "this is a
+      separate thing". Almost nothing on a judgment is a separate thing. A
+      border is spent only where there is a true boundary to mark — see
+      `.fj-bounded`, which exists for exactly one case (`self_only`).
+   2. **No decorative colour.** Every colour below is a meaning that already
+      existed in the product's vocabulary, promoted to a name. Light only.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Mixed-script normalization
+   --------------------------------------------------------------------------
+
+   Case evidence is Chinese, verbatim, quoted inside English sentences
+   (CLAUDE.md), so a mixed-script line is the normal case here, not an edge
+   case. Two things go wrong when it is left alone:
+
+   - **Optical size.** Songti SC and PingFang SC set noticeably larger on the
+     body than Georgia or the UI sans at the same px, so a Chinese quote inside
+     an English sentence reads as a shout it was never meant to be.
+   - **Line jitter.** A paragraph whose lines alternate between having CJK and
+     not gets uneven leading, because the taller CJK line box wins.
+
+   Both are fixed at the font layer rather than per-element: a `local()` face
+   with a `size-adjust` descriptor and a `unicode-range` restricted to CJK, so
+   the adjustment applies to exactly the glyphs that need it and to nothing
+   else. Leading is then declared once, unitless, on the prose container — with
+   equal font-size and equal line-height across the run, the line box is uniform
+   whichever script is on the line.
+
+   Do not solve mixed-script sizing by changing font-size on a quote. That
+   reintroduces the jitter and makes evidence a different size in every place it
+   appears. -------------------------------------------------------------- */
+
+@font-face {
+  font-family: "FJ CJK Serif";
+  src: local("Songti SC"), local("SongtiSC-Regular"), local("STSong");
+  size-adjust: 92%;
+  unicode-range: U+2E80-303F, U+3040-30FF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+    U+FE30-FE4F, U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: "FJ CJK Serif";
+  font-weight: 600;
+  src: local("Songti SC Bold"), local("SongtiSC-Bold"), local("STSong");
+  size-adjust: 92%;
+  unicode-range: U+2E80-303F, U+3040-30FF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+    U+FE30-FE4F, U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: "FJ CJK Sans";
+  src: local("PingFang SC"), local("PingFangSC-Regular");
+  size-adjust: 95%;
+  unicode-range: U+2E80-303F, U+3040-30FF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+    U+FE30-FE4F, U+FF00-FFEF;
+}
+
+@theme {
+  /* ------------------------------------------------------------------------
+     The two voices
+     ------------------------------------------------------------------------
+     The CJK faces above are listed FIRST in each stack: they only claim the CJK
+     unicode-range, so Latin still falls through to the serif/sans behind them.
+     ---------------------------------------------------------------------- */
+
+  /* The judgment's own prose. Nothing that is not the document uses this. */
+  --font-document: "FJ CJK Serif", ui-serif, "New York", Georgia,
+    "Source Serif 4", "Songti SC", serif;
+
+  /* Everything that describes the document: labels, counts, chrome, notes. */
+  --font-apparatus: "FJ CJK Sans", ui-sans-serif, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "PingFang SC", sans-serif;
+
+  /* Machine records read as machine records: ids, models, versions, claim ids. */
+  --font-ledger: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+
+  /* ------------------------------------------------------------------------
+     Type scale
+     ------------------------------------------------------------------------
+     Two ramps, deliberately non-overlapping. The largest apparatus size is
+     smaller than the smallest document size, so voice is legible from size
+     alone — you can tell what a line IS before you read it.
+
+     Document leading is 1.8 and never lower: long-form, mixed-script, and read
+     by someone who is not enjoying it.
+     ---------------------------------------------------------------------- */
+
+  --text-doc-lead: 1.375rem; /* the opening statement — 22px */
+  --text-doc-lead--line-height: 1.55;
+  --text-doc-head: 1.1875rem; /* section headings inside the document — 19px */
+  --text-doc-head--line-height: 1.4;
+  --text-doc: 1.0938rem; /* the document body — 17.5px */
+  --text-doc--line-height: 1.8;
+  --text-doc-sm: 1rem; /* claim statements, evidence — 16px */
+  --text-doc-sm--line-height: 1.75;
+
+  --text-app-title: 0.9375rem; /* the name of a movement — 15px */
+  --text-app-title--line-height: 1.4;
+  --text-app: 0.8125rem; /* apparatus body — 13px */
+  --text-app--line-height: 1.65;
+  --text-app-sm: 0.6875rem; /* eyebrows, lock lines, keys — 11px */
+  --text-app-sm--line-height: 1.5;
+
+  --text-figure: 3.5rem; /* the counted record basis — 56px */
+  --text-figure--line-height: 1;
+  --text-figure-sm: 1.875rem; /* the counts that are not the point — 30px */
+  --text-figure-sm--line-height: 1.1;
+
+  --tracking-eyebrow: 0.14em;
+
+  /* ------------------------------------------------------------------------
+     Measure
+     ------------------------------------------------------------------------
+     The document is capped at a reading measure, never at the container. The
+     apparatus gets a slightly wider one because it is read in glances.
+     ---------------------------------------------------------------------- */
+
+  --measure-document: 68ch;
+  --measure-apparatus: 74ch;
+
+  /* ------------------------------------------------------------------------
+     Ink, paper, hairline
+     ------------------------------------------------------------------------
+     Three steps of ink and no more. If something needs a fourth, it wants a
+     different size or more space, not a new grey. All warm — this is paper.
+     ---------------------------------------------------------------------- */
+
+  --color-ink-1: #16140f; /* the document, headings, the figures */
+  --color-ink-2: #4a463c; /* supporting prose, apparatus body */
+  --color-ink-3: #8a8377; /* labels, keys, chrome — never carries meaning alone */
+
+  --color-paper: #faf9f6; /* the page */
+  --color-paper-raised: #ffffff; /* bounded surfaces only */
+  --color-paper-sunken: #f3f0ea; /* verbatim evidence — the "object" ground */
+
+  --color-hairline: #e4e0d7; /* the default separator */
+  --color-hairline-strong: #c9c2b4; /* a real boundary */
+
+  /* ------------------------------------------------------------------------
+     Semantic colour — four meanings, no decoration
+     ------------------------------------------------------------------------
+     Each is `-ink` (text), `-rule` (a 2px lead rule or a border) and `-tint`
+     (a wash used only where a block must be marked as a different kind of
+     object). No colour appears on this product for any other reason.
+     ---------------------------------------------------------------------- */
+
+  /* GRADE — an evidence grade a human signed off, and the caution notices that
+     behave like one: something about this material is qualified. */
+  --color-grade-ink: #8a5a10;
+  --color-grade-rule: #dfc292;
+  --color-grade-tint: #fdf6e8;
+
+  /* BASIS — the counted record basis, and above all the zero. This is the
+     product's refusal colour: it marks what the record could NOT read. */
+  --color-basis-ink: #a8481a;
+  --color-basis-rule: #dda981;
+  --color-basis-tint: #fcf1e9;
+
+  /* REFUSAL — a safety refusal or a hard stop. Reserved; never used as accent. */
+  --color-refusal-ink: #9c1f1f;
+  --color-refusal-rule: #dfaba7;
+  --color-refusal-tint: #fcefee;
+
+  /* FROZEN — immutability, provenance, machine record. Neutral on purpose: a
+     frozen judgment is not a warning. */
+  --color-frozen-ink: #5f5c54;
+  --color-frozen-rule: #c9c2b4;
+  --color-frozen-tint: #f3f1ec;
+
+  /* ------------------------------------------------------------------------
+     Spacing
+     ------------------------------------------------------------------------
+     Three named steps on top of Tailwind's 4px ramp, for the three intervals
+     this page actually has: inside a block, between blocks, between movements.
+     Reach for these before reaching for whitespace by eye.
+     ---------------------------------------------------------------------- */
+
+  --spacing-gutter: 1.25rem; /* inside a block */
+  --spacing-block: 2.75rem; /* between blocks within a movement */
+  --spacing-movement: 5rem; /* between the page's movements */
+
+  --radius-bounded: 3px; /* the only radius. Boxes are rare; soft boxes are noise. */
+}
+
+/* ==========================================================================
+   Semantic classes
+   ==========================================================================
+   Named for what a thing IS, not what it looks like, so a redirection lands
+   here once instead of in forty class attributes.
+   ========================================================================== */
+
+@layer components {
+  /* ---- The page ground ------------------------------------------------- */
+
+  .fj-page {
+    background-color: var(--color-paper);
+    color: var(--color-ink-2);
+    font-family: var(--font-apparatus);
+  }
+
+  /* ---- The document voice ---------------------------------------------- */
+
+  /* The judgment's own prose. Leading and measure live here so every paragraph
+     inside inherits the same line box — see the mixed-script note above. */
+  .fj-doc {
+    font-family: var(--font-document);
+    font-size: var(--text-doc);
+    line-height: 1.8;
+    color: var(--color-ink-1);
+    max-width: var(--measure-document);
+    /* Chinese punctuation sits on a full-width em box; trimming it keeps a
+       quoted line from opening with a visible hole. */
+    text-spacing-trim: trim-start;
+  }
+
+  .fj-doc-lead {
+    font-family: var(--font-document);
+    font-size: var(--text-doc-lead);
+    line-height: 1.55;
+    color: var(--color-ink-1);
+    max-width: var(--measure-document);
+    text-wrap: pretty;
+  }
+
+  .fj-doc-head {
+    font-family: var(--font-document);
+    font-size: var(--text-doc-head);
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--color-ink-1);
+    text-wrap: balance;
+  }
+
+  /* ---- The apparatus voice --------------------------------------------- */
+
+  .fj-app {
+    font-family: var(--font-apparatus);
+    font-size: var(--text-app);
+    line-height: 1.65;
+    color: var(--color-ink-2);
+    max-width: var(--measure-apparatus);
+  }
+
+  /* The name of a movement of the page. Deliberately SMALLER than the document
+     headings it introduces: this is the screen announcing a stretch of page,
+     and it must not outweigh the judgment's own section headings underneath it.
+     Sans, because the screen is talking — the serif is reserved for the
+     judgment's own words and the frame it was issued under, so voice alone says
+     which of the two you are reading. */
+  .fj-title {
+    font-family: var(--font-apparatus);
+    font-size: var(--text-app-title);
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: var(--color-ink-1);
+  }
+
+  /* The smallest thing on the page. Names a block; is never read as content. */
+  .fj-eyebrow {
+    font-family: var(--font-apparatus);
+    font-size: var(--text-app-sm);
+    line-height: 1.5;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  .fj-key {
+    font-family: var(--font-apparatus);
+    font-size: var(--text-app-sm);
+    line-height: 1.5;
+    color: var(--color-ink-3);
+  }
+
+  .fj-ledger {
+    font-family: var(--font-ledger);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Verbatim evidence is an OBJECT ---------------------------------- */
+
+  /* Evidence is quoted, not spoken: it belongs to whoever said it, not to the
+     judgment. So it gets a ground of its own rather than an emphasis — and
+     never italics, which on CJK is a synthetic slant of the glyphs rather than
+     a change of voice.
+
+     Inline: a wash the width of the quote, inside the document's own line box.
+     `box-decoration-break: clone` keeps the wash whole across a line break, and
+     the padding is horizontal only so the leading does not move. */
+  .fj-verbatim {
+    background-color: var(--color-paper-sunken);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-hairline) 70%, transparent);
+    border-radius: 2px;
+    padding-inline: 0.22em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    font-style: normal;
+    color: var(--color-ink-1);
+  }
+
+  /* Block: the same ground, plus an inset rule marking the left edge of
+     somebody else's words. Used where a whole line of the record is shown. */
+  .fj-verbatim-block {
+    background-color: var(--color-paper-sunken);
+    border-left: 2px solid var(--color-hairline-strong);
+    padding: 0.5rem 0.875rem 0.625rem;
+    font-style: normal;
+  }
+
+  /* ---- Rules, not boxes ------------------------------------------------ */
+
+  /* A block is introduced by a rule above it and space around it. This is the
+     default way to separate anything on this product. */
+  .fj-rule-top {
+    border-top: 1px solid var(--color-hairline);
+  }
+
+  /* A 2px lead rule in a semantic colour. Carries the meaning a box used to. */
+  .fj-lead-rule {
+    border-left: 2px solid var(--color-hairline-strong);
+    padding-left: 1rem;
+  }
+
+  .fj-lead-rule-basis {
+    border-left-color: var(--color-basis-rule);
+  }
+
+  .fj-lead-rule-grade {
+    border-left-color: var(--color-grade-rule);
+  }
+
+  .fj-lead-rule-frozen {
+    border-left-color: var(--color-frozen-rule);
+  }
+
+  /* The limits of a judgment, drawn as a frame around the findings rather than
+     appended after them. Two rules, the full width of the column — wider than
+     the reading measure, so they visibly extend past the prose they enclose —
+     in the record-basis colour, because what a hearing could not reach is the
+     same fact as what its record could not read. Not a box: a bracket. */
+  .fj-frame {
+    border-top: 1px solid var(--color-basis-rule);
+    border-bottom: 1px solid var(--color-basis-rule);
+  }
+
+  /* ---- The one place a border earns its keep --------------------------- */
+
+  /* `self_only`: a section that stays here. The border is the boundary being
+     asserted, so it is the strong hairline and the surface lifts off the page.
+     Nothing else on this page may use this. */
+  .fj-bounded {
+    border: 1px solid var(--color-hairline-strong);
+    border-radius: var(--radius-bounded);
+    background-color: var(--color-paper-raised);
+  }
+
+  /* The audience marking under a bounded section. A statement of where the
+     text stops, said once, quietly — not a badge. */
+  .fj-lock-line {
+    font-family: var(--font-apparatus);
+    font-size: var(--text-app-sm);
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-3);
+    border-top: 1px solid var(--color-hairline);
+  }
+
+  /* ---- The counted record basis ---------------------------------------- */
+
+  /* A count, set as a figure. Large because the number is the argument. */
+  .fj-figure {
+    font-family: var(--font-apparatus);
+    font-size: var(--text-figure);
+    line-height: 1;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    color: var(--color-ink-1);
+  }
+
+  /* The counts that are context for the one that matters. */
+  .fj-figure-quiet {
+    font-family: var(--font-apparatus);
+    font-size: var(--text-figure-sm);
+    line-height: 1.1;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-3);
+  }
+
+  /* The zero. This is the product's refusal, stated as a number. */
+  .fj-figure-zero {
+    color: var(--color-basis-ink);
+    font-weight: 400;
+  }
+
+  /* ---- Apparatus tables ------------------------------------------------ */
+
+  /* Provenance and the fact-layer meta: honest, tabular, skippable. Hairline
+     rows rather than cells; no zebra, no chrome. */
+  .fj-record-row {
+    border-top: 1px solid var(--color-hairline);
+  }
+
+  /* ---- Chrome links ---------------------------------------------------- */
+
+  .fj-link {
+    color: var(--color-ink-2);
+    text-decoration: underline;
+    text-decoration-color: var(--color-hairline-strong);
+    text-underline-offset: 0.2em;
+  }
+
+  .fj-link:hover {
+    color: var(--color-ink-1);
+    text-decoration-color: var(--color-ink-3);
+  }
+
+  /* A control, in apparatus voice: a hairline and a label. Not a button-looking
+     button — nothing on a judgment page should invite a click that hard. */
+  .fj-control {
+    font-family: var(--font-apparatus);
+    font-size: var(--text-app);
+    color: var(--color-ink-2);
+    border: 1px solid var(--color-hairline-strong);
+    border-radius: var(--radius-bounded);
+    padding: 0.5rem 0.875rem;
+    background-color: var(--color-paper-raised);
+  }
+
+  .fj-control:hover {
+    border-color: var(--color-ink-3);
+    color: var(--color-ink-1);
+  }
+}

@@ -1,0 +1,1 @@
+ALTER TABLE `evidence` ADD `grade_confirmed_at` integer;

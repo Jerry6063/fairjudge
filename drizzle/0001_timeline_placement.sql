@@ -1,0 +1,1 @@
+ALTER TABLE `events` ADD `in_timeline` integer DEFAULT false NOT NULL;

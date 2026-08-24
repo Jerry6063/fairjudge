@@ -1,0 +1,118 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1784326709910,
+      "tag": "0000_warm_mad_thinker",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1786224085966,
+      "tag": "0001_timeline_placement",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1786224159263,
+      "tag": "0002_evidence_grade_signoff",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1786224266070,
+      "tag": "0003_evidence_grade_suggestion",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1786296913299,
+      "tag": "0004_m3_wave_a_columns",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1786327300679,
+      "tag": "0005_judgment_lineage",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1786408688715,
+      "tag": "0006_judgment_polish",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1786408710210,
+      "tag": "0007_judgment_swap_tests",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1786412456552,
+      "tag": "0008_shareable_narrative",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1786414181954,
+      "tag": "0009_followup_scheduler",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1786414282644,
+      "tag": "0010_appeal_and_export_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1786418005159,
+      "tag": "0011_m5_identity_and_visibility",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1786582079138,
+      "tag": "0012_m5_deletion_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1786942384365,
+      "tag": "0013_case_is_fixture",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1786942744036,
+      "tag": "0014_case_client_intent",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "6",
+      "when": 1787018377309,
+      "tag": "0015_llm_input_manifest",
+      "breakpoints": true
+    }
+  ]
+}

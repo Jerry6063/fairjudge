@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  fairjudge — 7 / 30-day follow-up timer (SPEC M4 ④).
+
+  Runs `npm run followups:run` once a day. Every path below is a placeholder:
+  __PROJECT_DIR__ and __NODE_BIN_DIR__ must be substituted before this is
+  installed. See README.md in this directory — this file is NOT installed by
+  the repository and nothing here touches ~/Library/LaunchAgents.
+
+  Two settings carry the whole design:
+
+    * RunAtLoad — fire once when the agent is loaded (login, or after a
+      reboot), so a machine that was off over a due date catches up as soon as
+      it comes back rather than waiting for tomorrow's calendar slot.
+    * StartCalendarInterval — a wall-clock daily run. launchd runs a missed
+      calendar job after the machine wakes; it does NOT run one for a machine
+      that was powered off. That gap is why the application also catches up at
+      start (src/instrumentation.ts), and why both paths are safe to run on
+      top of each other.
+
+  The script's exit code is meaningful: 1 means a check-in is overdue with no
+  questions to answer. It lands in the stderr log below, and the same state is
+  visible on the case page — a follow-up that did not fire is never only a log
+  line.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.fairjudge.followups</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>__NODE_BIN_DIR__/npm</string>
+    <string>run</string>
+    <string>followups:run</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>__PROJECT_DIR__</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <!-- launchd agents start with a minimal PATH; npm needs node on it. -->
+    <key>PATH</key>
+    <string>__NODE_BIN_DIR__:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>9</integer>
+    <key>Minute</key>
+    <integer>30</integer>
+  </dict>
+
+  <!-- Both streams are kept: the run prints what it did, and what it could not. -->
+  <key>StandardOutPath</key>
+  <string>__PROJECT_DIR__/data/logs/followups.log</string>
+  <key>StandardErrorPath</key>
+  <string>__PROJECT_DIR__/data/logs/followups.err.log</string>
+
+  <key>ProcessType</key>
+  <string>Background</string>
+</dict>
+</plist>
